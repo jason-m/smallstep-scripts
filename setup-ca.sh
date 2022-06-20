@@ -9,10 +9,15 @@ EMAIL="your@email.address"
 
 OPENID_CONFIG_ENDPOINT="https://accounts.google.com/.well-known/openid-configuration"
 
-# All your CA config and certificates will go into $STEPPATH.
+#Setup step user and permissions
+
 export STEPPATH=/etc/step
+useradd --system --home /etc/step --shell /bin/false step
+setcap CAP_NET_BIND_SERVICE=+eip $(which step-ca)
 mkdir -p $STEPPATH
 chmod 700 $STEPPATH
+chown -R step:step $STEPPATH
+
 echo $ROOT_KEY_PASSWORD > $STEPPATH/password.txt
 
 # Set up our basic CA configuration and generate root keys
@@ -34,8 +39,9 @@ step ca provisioner add SSHPOP --type=sshpop --ssh
 
 # Use Google (OIDC) as the default provisioner in the end user's
 # ssh configuration template.
-sed -i 's/\%p$/%p --provisioner="Google"/g' /etc/step-ca/templates/ssh/config.tpl
-
-service step-ca start
+sed -i 's/\%p$/%p --provisioner="Google"/g' $STEPPATH/templates/ssh/config.tpl
 
 echo "export STEPPATH=$STEPPATH" >> /root/.profile
+
+
+chown -R step:step $STEPPATH
