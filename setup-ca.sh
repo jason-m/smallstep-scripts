@@ -1,13 +1,13 @@
 #!/bin/bash
 
-OIDC_CLIENT_ID="[OAuth client ID]" # from Google
-OIDC_CLIENT_SECRET="[OAuth client secret]" # from Google
-ALLOWED_DOMAIN="[the domain name of accounts your users will use to sign to Google]"
-CA_NAME="[A name for your CA]"
+OIDC_CLIENT_ID="[OAuth client ID]" # from openid provider, Google used as default
+OIDC_CLIENT_SECRET="[OAuth client secret]" # from openid provider, Google used as default
+ALLOWED_DOMAIN="[the domain name of accounts your users will use to sign to Google]" #optional for privade openid servers *6**
+CA_NAME="[A name for your CA]" 
 ROOT_KEY_PASSWORD="[A password for your CA's root key]"
 EMAIL="your@email.address"
-
-OPENID_CONFIG_ENDPOINT="https://accounts.google.com/.well-known/openid-configuration"
+OPENID_CONFIG_ENDPOINT="https://accounts.google.com/.well-known/openid-configuration" #google oidc provided for default
+OIDC_PROVIDER="Google" #name for your oidc provider in this case google can be anything
 
 #Setup step user and permissions
 
@@ -39,7 +39,7 @@ step ca provisioner add SSHPOP --type=sshpop --ssh
 
 # Use Google (OIDC) as the default provisioner in the end user's
 # ssh configuration template.
-sed -i 's/\%p$/%p --provisioner="Google"/g' $STEPPATH/templates/ssh/config.tpl
+sed -i 's/\%p$/%p --provisioner="$OIDC_PROVIDER"/g' $STEPPATH/templates/ssh/config.tpl
 
 echo "export STEPPATH=$STEPPATH" >> /root/.profile
 
