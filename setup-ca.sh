@@ -8,6 +8,8 @@ ROOT_KEY_PASSWORD="[A password for your CA's root key]"
 EMAIL="your@email.address"
 OPENID_CONFIG_ENDPOINT="https://accounts.google.com/.well-known/openid-configuration" #google oidc provided for default
 OIDC_PROVIDER="Google" #name for your oidc provider in this case google can be anything
+DNS_NAME="dns.name" #the dns name of your system
+
 
 #Setup step user and permissions
 
@@ -22,7 +24,7 @@ echo $ROOT_KEY_PASSWORD > $STEPPATH/password.txt
 
 # Set up our basic CA configuration and generate root keys
 step ca init --ssh --name="$CA_NAME" \
-     --dns="$LOCAL_IP,$LOCAL_HOSTNAME,$PUBLIC_IP,$PUBLIC_HOSTNAME" \
+     --dns="$DNS_NAME" \
      --address=":443" --provisioner="$EMAIL" \
      --password-file="$STEPPATH/password.txt"
 
@@ -30,8 +32,8 @@ step ca init --ssh --name="$CA_NAME" \
 step ca provisioner add Google --type=oidc --ssh \
     --client-id="$OIDC_CLIENT_ID" \
     --client-secret="$OIDC_CLIENT_SECRET" \
-    --configuration-endpoint="$OPENID_CONFIG_ENDPOINT" \
-    --domain="$ALLOWED_DOMAIN"
+    --configuration-endpoint="$OPENID_CONFIG_ENDPOINT"
+#     --domain="$ALLOWED_DOMAIN"
 
 
 # The sshpop provisioner lets hosts renew their ssh certificates
